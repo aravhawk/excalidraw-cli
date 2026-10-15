@@ -131,7 +131,13 @@ Palette, in order, when the diagram has several boxes: `#a5d8ff`, `#b2f2bb`, `#f
 
 There is no `label` property. A label is a second element of `type: "text"`.
 
-The renderer does not reflow or recenter text. `textAlign` and `verticalAlign` apply inside the text element's own box. For a centered label, set the text element's `x`, `y`, `width`, and `height` to the container's box.
+The renderer does not reflow or vertically recenter text. `textAlign: "center"` centers each line within the text element's width, but `verticalAlign: "middle"` does not move it within the container during export. For a centered label:
+
+- Set `height` to `fontSize × lineHeight × number of lines` (one line at 20px and 1.25 line height is 25px).
+- Set `x` and `width` to the container's `x` and `width`.
+- Set `y` to `container.y + (container.height - text.height) / 2`.
+
+Recompute and patch the label geometry too when resizing or moving its container. For example, a 220×100 rectangle at `(100, 80)` needs a one-line 20px label at `(100, 117.5)` with `width: 220` and `height: 25`.
 
 Also set:
 
@@ -145,7 +151,7 @@ Also set:
 
 Containers that can hold text are `rectangle`, `stickynote`, `diamond`, `ellipse`, and `arrow`. Place the text after its container in the array.
 
-A text box smaller than its glyphs clips them. For a label inside a shape, reuse the shape's box. For standalone text, give the element a width that fits the string on one line, then check the PNG.
+Give the text enough width for its longest line and enough height for all lines. For standalone text, use the same height calculation and choose `x` and `y` directly. Check the PNG for clipping.
 
 `stickynote` needs a `baseHeight` (use the element's `height`). Restore forces a solid, non-transparent fill.
 
